@@ -1,28 +1,6 @@
 # Unreleased
 
 ## Fixes
-- **Router**: a model that forges the client harness's control markers now loses
-  its position instead of merely being filtered. Harness XML blocks and control
-  lines (`[Request interrupted by user]`) are a protocol violation — the router
-  owns the conversation frame, the client owns its content — and one is recorded
-  as an error on the request, which is the signal `getHealth` already reads, so
-  a persistent offender sinks within 30 minutes and the pool reorders on the next
-  tuner run. Detection is outbound-only and covers all four response paths,
-  including the Codex/Responses branch that previously had no check at all. The
-  marker vocabulary moves to `open-sse/config/frameMarkers.js`; it had been
-  declared twice, so a marker added to one copy silently did not apply on the
-  other path. Repeating the user's message back stays a discipline strike, not a
-  frame violation — the router does not grade output. See `docs/adr/0002`
-- **Tests**: `verify-no-regression.mjs` recovered the repo-relative path by
-  splitting on `/app/`, so outside the container every entry became
-  `undefined :: <name>`, matched nothing in the baseline, and reported all 98
-  failures as regressions — the gate only ever worked in Docker. It anchors on
-  the `tests/` segment now, and `known-fails.txt` is re-measured (85 entries,
-  was 24)
-- **Tests**: the 13 `security-audit` assertions that read repo source resolved
-  `src/...` against the process cwd, so running the suite the documented way
-  (`cd tests && npx vitest run`) failed every one with ENOENT on `tests/src/...`.
-  They anchor on the file's own location and pass from anywhere
 - **Tuner**: bands are derived from a model's declared identity instead of guessed
   from its id. `matchBench` ended in a substring scan, which failed in both
   directions on the same model — `ag/gemini-3.1-pro-low` matched `gemini-3.1-pro`
